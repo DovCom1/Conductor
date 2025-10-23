@@ -13,10 +13,12 @@ namespace Conductor.Controllers;
 public class ChatsController: ControllerBase
 {
     private readonly IRouteService _routeService;
+    private readonly ILogger<ChatsController> _logger;
 
-    public ChatsController(IRouteService routeService)
+    public ChatsController(IRouteService routeService, ILogger<ChatsController> logger)
     {
         _routeService = routeService;
+        _logger = logger;
     }
 
     [HttpGet("{chatId}")]
@@ -32,18 +34,9 @@ public class ChatsController: ControllerBase
 
         await Task.WhenAll(chatInfoTask, chatHistoryTask, chatParticipantsTask);
 
-        if (!chatInfoTask.Result.IsSuccess)
-        {
-            return StatusCode(chatInfoTask.Result.StatusCode, $"An error occurred: {chatInfoTask.Result.Error}");
-        }
-        if (!chatHistoryTask.Result.IsSuccess)
-        {
-            return StatusCode(chatHistoryTask.Result.StatusCode, $"An error occurred: {chatHistoryTask.Result.Error}");
-        }
-        if (!chatParticipantsTask.Result.IsSuccess)
-        {
-            return StatusCode(chatParticipantsTask.Result.StatusCode, $"An error occurred: {chatParticipantsTask.Result.Error}");
-        }
+        var firstFailedResult = GetFirstFailedResponse(chatInfoTask.Result, chatHistoryTask.Result, chatParticipantsTask.Result);
+        if (firstFailedResult is not null)
+            return StatusCode(firstFailedResult.StatusCode, $"An error occurred: {firstFailedResult.Error}");
 
         var chatData = new ChatData()
         {
@@ -58,51 +51,26 @@ public class ChatsController: ControllerBase
     [HttpPost("{chatId}")]
     public async Task<IActionResult> SendMessageAsync(Guid chatId, [FromBody] SendMessageRequest request)
     {
+        if (request is null)
+            return BadRequest("Request body is required");
+
         var chatInfo = await _routeService.GetAsync<ChatInfoDto>(Constants.ChatServiceName, $"/api/chats/{chatId}");
+
         if (!chatInfo.IsSuccess)
-        {
             return StatusCode(chatInfo.StatusCode, $"An error occurred: {chatInfo.Error}");
-        }
 
-        if (chatInfo.Data.Type is ChatType.Private)
+        if (chatInfo.Data?.Type == ChatType.Private)
         {
-            var participants = await _routeService.GetAsync<ChatParticipantsDto>(Constants.ChatServiceName, $"/api/chats/{chatId}/members");
-
-            if (!participants.IsSuccess)
-                return StatusCode(participants.StatusCode, $"An error occurred: {participants.Error}");
-
-            foreach (var participant in participants.Data.Members)
-            {
-                if (participant.UserId == request.UserId)
-                    continue;
-
-                var isEnemy = await _routeService.GetAsync<IsEnemyDto>(Constants.UserServiceName,
-                    $"/api/users/{request.UserId}/enemies/{participant.UserId}/exists");
-
-                if (!isEnemy.IsSuccess)
-                    return StatusCode(isEnemy.StatusCode, $"An error occurred: {isEnemy.Error}");
-
-                if (isEnemy.Data.Exists)
-                {
-                    var enemySettings = await _routeService.GetAsync<EnemySettingsDto>(Constants.SettingsServiceName,
-                        $"/api/settings/{request.UserId}/enemies/{participant.UserId}");
-                    if (!enemySettings.IsSuccess)
-                        return StatusCode(enemySettings.StatusCode, $"An error occurred: {enemySettings.Error}");
-
-                    if (enemySettings.Data.NotificationSettings is NotificationSettings.Nothing)
-                        return BadRequest($"User {request.UserId} is blocked in chat {chatId}");
-                }
-            }
+            var validationResult = await ValidatePrivateChatMessageAsync(chatId, request);
+            if (validationResult is not null)
+                return validationResult;
         }
 
-        var sendResult = await _routeService.PostAsync<SendMessageRequest>(request,Constants.ChatServiceName, $"/api/chats/{chatId}/messages");
+        var sendResult = await _routeService.PostAsync<SendMessageRequest>(request, Constants.ChatServiceName, $"/api/chats/{chatId}/messages");
 
-        if (!sendResult.IsSuccess)
-        {
-            return StatusCode(sendResult.StatusCode, $"Can`t send message. An error occurred: {sendResult.Error}");
-        }
-
-        return Ok();
+        return !sendResult.IsSuccess
+            ? StatusCode(sendResult.StatusCode, $"An error occurred: {sendResult.Error}")
+            : Ok(); 
     }
     
     [HttpPut("{chatId}/messages/{messageId}")]
@@ -127,5 +95,50 @@ public class ChatsController: ControllerBase
         var chats = await _routeService.GetAsync<ChatListDto>(Constants.ChatServiceName,
             $"/api/chats/users/{userId}");
         return !chats.IsSuccess ? StatusCode(chats.StatusCode, $"An error occurred: {chats.Error}") : Ok(chats.Data);
+    }
+
+    private Result? GetFirstFailedResponse(params Result[] responses)
+    {
+        return responses.FirstOrDefault(r => !r.IsSuccess);
+    }
+
+    private async Task<IActionResult?> ValidatePrivateChatMessageAsync(Guid chatId, SendMessageRequest request)
+    {
+        var participants = await _routeService.GetAsync<ChatParticipantsDto>(
+            Constants.ChatServiceName, $"/api/chats/{chatId}/members");
+
+        if (!participants.IsSuccess)
+            return StatusCode(participants.StatusCode, $"An error occurred: {participants.Error}");
+
+        foreach (var participant in participants.Data!.Members)
+        {
+            if (participant.UserId == request.UserId)
+                continue;
+
+            var isEnemy = await _routeService.GetAsync<IsEnemyDto>(
+                Constants.UserServiceName, $"/api/users/{request.UserId}/enemies/{participant.UserId}/exists");
+
+            if (!isEnemy.IsSuccess)
+                return StatusCode(isEnemy.StatusCode, $"An error occurred: {isEnemy.Error}");
+
+            if (isEnemy.Data?.Exists == true)
+            {
+                var enemySettings = await _routeService.GetAsync<EnemySettingsDto>(
+                    Constants.SettingsServiceName, $"/api/settings/{request.UserId}/enemies/{participant.UserId}");
+
+                if (!enemySettings.IsSuccess)
+                    return StatusCode(enemySettings.StatusCode, $"An error occurred: {enemySettings.Error}");
+
+                if (enemySettings.Data?.NotificationSettings == NotificationSettings.Nothing)
+                {
+                    _logger.LogWarning(
+                        "User {UserId} is blocked from sending messages in chat {ChatId} by user {ParticipantId}",
+                        request.UserId, chatId, participant.UserId);
+                    return BadRequest($"User {request.UserId} is blocked in chat {chatId}");
+                }
+            }
+        }
+
+        return null;
     }
 }
