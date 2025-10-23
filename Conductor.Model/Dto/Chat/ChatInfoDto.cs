@@ -1,11 +1,11 @@
 ﻿namespace Conductor.Dto.Chat;
 
 public record ChatInfoDto(
-    string Name,
+    string? Name,
     Guid Id,
     Guid? AdminId,
-    string AvatarUrl,
-    ChatType Type);
+    string? AvatarUrl,
+    ChatType? Type);
 
 public enum ChatType
 {

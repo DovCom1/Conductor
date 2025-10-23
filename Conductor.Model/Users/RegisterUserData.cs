@@ -1,10 +1,12 @@
-﻿namespace Conductor.Models.Users;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Conductor.Models.Users;
 
 public class RegisterUserData
 {
-	public string Uid { get; set; }
-	public string Nickname { get; set; }
-	public string Email { get; set; }
-	public string Gender { get; set; }
-	public DateTime DateOfBirth { get; set; }
+    public required string Uid { get; set; }
+    public required string Nickname { get; set; }
+    public required string Email { get; set; }
+    public required string Gender { get; set; }
+    public required DateOnly DateOfBirth { get; set; }
 }

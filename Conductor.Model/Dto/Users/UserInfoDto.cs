@@ -8,8 +8,8 @@ public record UserInfoDto(
     string AvatarUrl,
     string Gender,
     string Status,
-    DateTime DateOfBirth,
-    DateTime AccountCreationTime);
+    DateOnly DateOfBirth,
+    DateOnly AccountCreationTime);
 
 public record UserInfoMainDto(
     Guid Id,

@@ -8,5 +8,5 @@ public record UpdateUserInfoDto(
     string? AvatarUrl,
     string? Gender,
     string? Status,
-    DateTime? DateOfBirth,
-    DateTime? AccountCreationTime);
+    DateOnly? DateOfBirth,
+    DateOnly? AccountCreationTime);

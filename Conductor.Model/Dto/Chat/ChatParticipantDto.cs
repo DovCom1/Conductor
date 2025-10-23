@@ -2,4 +2,4 @@
 
 public record ChatParticipantDto(Guid UserId, string Role, string Nickname);
 
-public record ChatParticipantsDto(List<ChatParticipantDto> Members);
+public record ChatParticipantsDto(IList<ChatParticipantDto> Members);

@@ -67,9 +67,9 @@ public class UsersController: ControllerBase
     }
     
     [HttpPatch("{userId}/friends/{friendId}/reject")]
-    public async Task<ActionResult<FriendResponseDto>> RejectFriendRequestAsync(Guid userId, Guid friendId)
+    public async Task<IActionResult> RejectFriendRequestAsync(Guid userId, Guid friendId)
     {
-        var rejectRequest = await _routeService.PatchAsync<FriendResponseDto>(Constants.UserServiceName,
+        var rejectRequest = await _routeService.PatchAsync(Constants.UserServiceName,
             $"/api/users/{userId}/friends/{friendId}/reject");
         return !rejectRequest.IsSuccess ? StatusCode(rejectRequest.StatusCode, $"An error occurred: {rejectRequest.Error}") : Ok();
     }
@@ -85,18 +85,18 @@ public class UsersController: ControllerBase
     public async Task<ActionResult<UserInfoDto>> RegisterUserAsync([FromBody] RegisterUserData registerUserData)
     {
         var registerUser = await _routeService.PostAsync<RegisterUserData, UserInfoDto>(registerUserData, Constants.UserServiceName, $"/api/users/register");
-        return !registerUser.IsSuccess ? StatusCode(registerUser.StatusCode, $"An error occurred: {registerUser.Error}") : Ok();
+        return !registerUser.IsSuccess ? StatusCode(registerUser.StatusCode, $"An error occurred: {registerUser.Error}") : Ok(registerUser.Data);
     }
     
     [HttpPatch("{userId}")]
     public async Task<ActionResult<UserInfoDto>> UpdateUserAsync(Guid userId, [FromBody] UpdateUserInfoDto userInfo)
     {
         var updateUser = await _routeService.PatchAsync<UpdateUserInfoDto, UserInfoDto>(userInfo, Constants.UserServiceName, $"/api/users/{userId}");
-        return !updateUser.IsSuccess ? StatusCode(updateUser.StatusCode, $"An error occurred: {updateUser.Error}") : Ok();
+        return !updateUser.IsSuccess ? StatusCode(updateUser.StatusCode, $"An error occurred: {updateUser.Error}") : Ok(updateUser.Data);
     }
     
     [HttpDelete("{userId}")]
-    public async Task<ActionResult<UserInfoDto>> DeleteUserAsync(Guid userId)
+    public async Task<IActionResult> DeleteUserAsync(Guid userId)
     {
         var deleteUser = await _routeService.DeleteAsync(Constants.UserServiceName, $"/api/users/{userId}");
         return !deleteUser.IsSuccess ? StatusCode(deleteUser.StatusCode, $"An error occurred: {deleteUser.Error}") : Ok();
@@ -106,21 +106,21 @@ public class UsersController: ControllerBase
     public async Task<ActionResult<UserListDto<UserInfoDto>>> GetUsersAsync([FromQuery] int offset, [FromQuery] int limit)
     {
         var users = await _routeService.GetAsync<UserListDto<UserInfoDto>>(Constants.UserServiceName, $"/api/users?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
     
     [HttpGet("main")]
     public async Task<ActionResult<UserListDto<UserInfoMainDto>>> GetUsersMainAsync([FromQuery] int offset, [FromQuery] int limit)
     {
         var users = await _routeService.GetAsync<UserListDto<UserInfoMainDto>>(Constants.UserServiceName, $"/api/users/main?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
     
     [HttpPost("{userId}/enemies/{enemyId}")]
-    public async Task<ActionResult<UserInfoDto>> AddUserToEnemiesAsync(Guid userId, Guid enemyId)
+    public async Task<ActionResult<EnemyResponseDto>> AddUserToEnemiesAsync(Guid userId, Guid enemyId)
     {
-        var addEnemy = await _routeService.PostAsync<UserInfoDto>(Constants.UserServiceName, $"/api/users/{userId}/enemies/{enemyId}");
-        return !addEnemy.IsSuccess ? StatusCode(addEnemy.StatusCode, $"An error occurred: {addEnemy.Error}") : Ok();
+        var addEnemy = await _routeService.PostAsync<EnemyResponseDto>(Constants.UserServiceName, $"/api/users/{userId}/enemies/{enemyId}");
+        return !addEnemy.IsSuccess ? StatusCode(addEnemy.StatusCode, $"An error occurred: {addEnemy.Error}") : Ok(addEnemy.Data);
     }
     
     [HttpDelete("{userId}/enemies/{enemyId}")]
@@ -133,28 +133,28 @@ public class UsersController: ControllerBase
     [HttpGet("{userId}/friends")]
     public async Task<ActionResult<UserListDto<UserInfoMainDto>>> GetFriendsAsync(Guid userId, [FromQuery] int offset, [FromQuery] int limit)
     {
-        var users = await _routeService.GetAsync<UserInfoMainDto>(Constants.UserServiceName, $"/api/users/{userId}/friends?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        var users = await _routeService.GetAsync<UserListDto<UserInfoMainDto>>(Constants.UserServiceName, $"/api/users/{userId}/friends?offset={offset}&limit={limit}");
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
     
     [HttpGet("{userId}/enemies")]
     public async Task<ActionResult<UserListDto<UserInfoMainDto>>> GetEnemiesAsync(Guid userId, [FromQuery] int offset, [FromQuery] int limit)
     {
-        var users = await _routeService.GetAsync<UserInfoMainDto>(Constants.UserServiceName, $"/api/users/{userId}/enemies?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        var users = await _routeService.GetAsync<UserListDto<UserInfoMainDto>>(Constants.UserServiceName, $"/api/users/{userId}/enemies?offset={offset}&limit={limit}");
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
     
     [HttpGet("{userId}/friends/requests/incoming")]
     public async Task<ActionResult<UserListDto<UserInfoMainDto>>> GetIncomingRequestsAsync(Guid userId, [FromQuery] int offset, [FromQuery] int limit)
     {
-        var users = await _routeService.GetAsync<UserInfoMainDto>(Constants.UserServiceName, $"/api/users/{userId}/friends/requests/incoming?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        var users = await _routeService.GetAsync<UserListDto<UserInfoMainDto>>(Constants.UserServiceName, $"/api/users/{userId}/friends/requests/incoming?offset={offset}&limit={limit}");
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
     
     [HttpGet("{userId}/friends/requests/outgoing")]
     public async Task<ActionResult<UserListDto<UserInfoMainDto>>> GetOutgoingRequestsAsync(Guid userId, [FromQuery] int offset, [FromQuery] int limit)
     {
-        var users = await _routeService.GetAsync<UserInfoMainDto>(Constants.UserServiceName, $"/api/users/{userId}/friends/requests/outgoing?offset={offset}&limit={limit}");
-        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok();
+        var users = await _routeService.GetAsync<UserListDto<UserInfoMainDto>>(Constants.UserServiceName, $"/api/users/{userId}/friends/requests/outgoing?offset={offset}&limit={limit}");
+        return !users.IsSuccess ? StatusCode(users.StatusCode, $"An error occurred: {users.Error}") : Ok(users.Data);
     }
 }

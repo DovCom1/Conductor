@@ -3,7 +3,7 @@
 namespace Conductor.Dto.Search;
 
 public record SearchNicknameResponseDto(
-    List<UserInfoMainDto> Data,
+    IList<UserInfoMainDto> Data,
     int Offset,
     int Limit,
     int Total);

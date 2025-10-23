@@ -4,7 +4,7 @@ public class Result<T> : Result
 {
     public T? Data { get; protected set; }
 
-    public static Result<T> Success(T data, int statusCode = 200)
+    public static Result<T> Success(T? data, int statusCode = 200)
     {
         return new Result<T>
         {
@@ -14,7 +14,7 @@ public class Result<T> : Result
         };
     }
 
-    public static Result<T> Failure(string error, int statusCode = 400)
+    public static new Result<T> Failure(string error, int statusCode = 400)
     {
         return new Result<T>
         {

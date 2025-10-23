@@ -3,7 +3,7 @@
 public record ChatMessageDto(
     Guid Id,
     Guid SenderId,
-    string Content,
+    string? Content,
     DateTime SentAt,
-    DateTime EditedAt,
+    DateTime? EditedAt,
     bool Deleted);

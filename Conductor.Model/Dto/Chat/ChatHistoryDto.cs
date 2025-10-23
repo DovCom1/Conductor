@@ -4,4 +4,4 @@ public record ChatHistoryDto(
     Guid ChatId,
     int PageNumber,
     int PageSize,
-    List<ChatMessageDto> Messages);
+    IList<ChatMessageDto>? Messages);

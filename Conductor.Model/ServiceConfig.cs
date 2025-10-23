@@ -2,6 +2,6 @@
 
 public class ServiceConfig
 {
-    public string Name { get; set; }
-    public string BaseUrl { get; set; }
+    public required string Name { get; set; }
+    public required string BaseUrl { get; set; }
 }

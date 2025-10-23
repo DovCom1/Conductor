@@ -11,5 +11,6 @@ public interface IRouteService
     Task<Result> DeleteAsync(string serviceName, string endpoint);
     Task<Result<TResponse>> PatchAsync<TRequest, TResponse>(TRequest request, string serviceName, string endpoint);
     Task<Result<TResponse>> PatchAsync<TResponse>(string serviceName, string endpoint);
+    Task<Result> PatchAsync(string serviceName, string endpoint);
     Task<Result> PutAsync<TRequest>(TRequest request, string serviceName, string endpoint);
 }

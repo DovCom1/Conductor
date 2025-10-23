@@ -2,10 +2,10 @@
 
 public class ServiceRegistry
 {
-    public ServiceConfig UserService { get; set; }
-    public ServiceConfig ChatService { get; set; }
-    public ServiceConfig SettingsService { get; set; }
-    public ServiceConfig SearchService { get; set; }
+    public required ServiceConfig UserService { get; set; }
+    public required ServiceConfig ChatService { get; set; }
+    public required ServiceConfig SettingsService { get; set; }
+    public required ServiceConfig SearchService { get; set; }
     
     public ServiceConfig GetServiceConfig(string serviceName)
     {
@@ -21,12 +21,12 @@ public class ServiceRegistry
     
     public List<ServiceConfig> GetAllServices()
     {
-        return new List<ServiceConfig>
-        {
+        return
+        [
             UserService,
             ChatService,
             SettingsService,
             SearchService
-        };
+        ];
     }
 }
