@@ -1,4 +1,7 @@
-﻿using Conductor.Models;
+﻿using Conductor.Managers;
+using Conductor.Model.Interfaces.Services;
+using Conductor.Model.ServiceRegistry;
+using Conductor.Models.Interfaces.Managers;
 using Conductor.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +47,9 @@ public static class ServiceCollectionExtensions
 
     private static void RegisterApplicationServices(IServiceCollection services)
     {
-        services.AddSingleton<IRouteService, RouteService>();
+        services
+            .AddScoped<IRouteService, RouteService>()
+            .AddScoped<IUsersManager, UsersManager>()
+            .AddScoped<IChatsManager, ChatsManager>();
     }
 }

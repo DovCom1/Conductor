@@ -1,4 +1,6 @@
-﻿namespace Conductor.Models;
+﻿using Conductor.Models;
+
+namespace Conductor.Model.ServiceRegistry;
 
 public class ServiceRegistry
 {
@@ -11,10 +13,10 @@ public class ServiceRegistry
     {
         return serviceName.ToLower() switch
         {
-            Constants.UserServiceName => UserService,
-            Constants.ChatServiceName => ChatService,
-            Constants.SettingsServiceName => SettingsService,
-            Constants.SearchServiceName => SearchService,
+            Constants.Constants.UserServiceName => UserService,
+            Constants.Constants.ChatServiceName => ChatService,
+            Constants.Constants.SettingsServiceName => SettingsService,
+            Constants.Constants.SearchServiceName => SearchService,
             _ => throw new ArgumentException($"Unknown service: {serviceName}")
         };
     }

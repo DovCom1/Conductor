@@ -17,7 +17,7 @@ public class Result
         };
     }
 
-    public static Result Failure(string error, int statusCode = 400)
+    public static Result Failure(string? error, int statusCode = 400)
     {
         return new Result
         {

@@ -14,7 +14,7 @@ public class Result<T> : Result
         };
     }
 
-    public static new Result<T> Failure(string error, int statusCode = 400)
+    public static new Result<T> Failure(string? error, int statusCode = 400)
     {
         return new Result<T>
         {

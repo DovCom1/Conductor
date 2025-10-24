@@ -1,6 +1,6 @@
 ﻿using Conductor.Models;
 
-namespace Conductor.Services;
+namespace Conductor.Model.Interfaces.Services;
 
 public interface IRouteService
 {

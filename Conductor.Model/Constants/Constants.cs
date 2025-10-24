@@ -1,4 +1,4 @@
-﻿namespace Conductor.Models;
+﻿namespace Conductor.Model.Constants;
 
 public static class Constants
 {

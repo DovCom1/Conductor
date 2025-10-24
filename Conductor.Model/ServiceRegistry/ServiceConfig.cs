@@ -1,4 +1,4 @@
-﻿namespace Conductor.Models;
+﻿namespace Conductor.Model.ServiceRegistry;
 
 public class ServiceConfig
 {
