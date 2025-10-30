@@ -1,4 +1,5 @@
 ﻿using Conductor.Managers;
+using Conductor.Model.Interfaces.Managers;
 using Conductor.Model.Interfaces.Services;
 using Conductor.Model.ServiceRegistry;
 using Conductor.Models.Interfaces.Managers;
@@ -50,6 +51,7 @@ public static class ServiceCollectionExtensions
         services
             .AddScoped<IRouteService, RouteService>()
             .AddScoped<IUsersManager, UsersManager>()
-            .AddScoped<IChatsManager, ChatsManager>();
+            .AddScoped<IChatsManager, ChatsManager>()
+            .AddScoped<ISettingsManager, SettingsManager>();
     }
 }
