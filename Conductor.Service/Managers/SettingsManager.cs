@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Conductor.Dto.Settings;
+﻿using Conductor.Dto.Settings;
 using Conductor.Model.Constants;
 using Conductor.Model.Dto.Settings;
 using Conductor.Model.Interfaces.Managers;
 using Conductor.Model.Interfaces.Services;
 using Conductor.Models;
-using Conductor.Models.Interfaces.Managers;
 
 namespace Conductor.Managers
 {
@@ -24,8 +18,10 @@ namespace Conductor.Managers
 
         public async Task<Result<EnemySettingsDto>> GetEnemySettings(Guid userId, Guid enemyId)
         {
-            return await routeService.GetAsync<EnemySettingsDto>(Constants.SettingsServiceName, 
-                $"/api/settings/{userId}/enemies/{enemyId}");
+            var not = new EnemySettingsDto(NotificationSettings.AllNotifications);
+            return Result<EnemySettingsDto>.Success(not);
+            /*return await routeService.GetAsync<EnemySettingsDto>(Constants.SettingsServiceName, 
+                $"/api/settings/{userId}/enemies/{enemyId}");*/
         }
 
         public async Task<Result> SetEnemySettings(EnemySettingsRequest request)

@@ -1,7 +1,5 @@
-﻿using Conductor.Dto.Settings;
-using Conductor.Model.Dto.Settings;
+﻿using Conductor.Model.Dto.Settings;
 using Conductor.Model.Interfaces.Managers;
-using Conductor.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConductorApi.Controllers

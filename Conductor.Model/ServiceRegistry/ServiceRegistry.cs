@@ -1,6 +1,4 @@
-﻿using Conductor.Models;
-
-namespace Conductor.Model.ServiceRegistry;
+﻿namespace Conductor.Model.ServiceRegistry;
 
 public class ServiceRegistry
 {
@@ -8,7 +6,8 @@ public class ServiceRegistry
     public required ServiceConfig ChatService { get; set; }
     public required ServiceConfig SettingsService { get; set; }
     public required ServiceConfig SearchService { get; set; }
-    
+    public required ServiceConfig CallsService { get; set; }
+
     public ServiceConfig GetServiceConfig(string serviceName)
     {
         return serviceName.ToLower() switch
@@ -17,6 +16,7 @@ public class ServiceRegistry
             Constants.Constants.ChatServiceName => ChatService,
             Constants.Constants.SettingsServiceName => SettingsService,
             Constants.Constants.SearchServiceName => SearchService,
+            Constants.Constants.CallsServiceName => CallsService,
             _ => throw new ArgumentException($"Unknown service: {serviceName}")
         };
     }
@@ -28,7 +28,8 @@ public class ServiceRegistry
             UserService,
             ChatService,
             SettingsService,
-            SearchService
+            SearchService,
+            CallsService
         ];
     }
 }

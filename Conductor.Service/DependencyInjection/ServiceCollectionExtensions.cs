@@ -39,9 +39,15 @@ public static class ServiceCollectionExtensions
     {
         foreach (var serviceConfig in serviceRegistry.GetAllServices())
         {
-            services.AddHttpClient(serviceConfig.Name, client =>
+            services.AddHttpClient(serviceConfig.Name, (sp, client) =>
             {
-                client.BaseAddress = new Uri(serviceConfig.BaseUrl);
+                var configuration = sp.GetRequiredService<IConfiguration>();
+
+                var baseUrl = configuration[$"{serviceConfig.Name}__BaseUrl"] ??
+                              configuration[$"{serviceConfig.Name}:BaseUrl"] ??
+                              serviceConfig.BaseUrl;
+
+                client.BaseAddress = new Uri(baseUrl);
             });
         }
     }
