@@ -32,20 +32,26 @@ public class UsersController: ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<UserInfoMainDto>> GetUserByUidAsync([FromQuery] string uid)
+    public async Task<IActionResult> SearchUsers(
+    [FromQuery] string uid = null,
+    [FromQuery] string nickname = null,
+    [FromQuery] int offset = 0,
+    [FromQuery] int limit = 20)
     {
-        var result = await _usersManager.GetUserByUidAsync(uid);
-        return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
-    }
-    
-    [HttpGet("search/{nickname}")]
-    public async Task<ActionResult<SearchNicknameResponseDto>> GetUsersByNicknameAsync(
-        string nickname,
-        [FromQuery] int offset,
-        [FromQuery] int limit)
-    {
-        var result = await _usersManager.GetUsersByNicknameAsync(nickname, offset, limit);
-        return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
+        if (!string.IsNullOrEmpty(uid) && string.IsNullOrEmpty(nickname))
+        {
+            var result = await _usersManager.GetUserByUidAsync(uid);
+            return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
+        }
+        else if (!string.IsNullOrEmpty(nickname) && string.IsNullOrEmpty(uid))
+        {
+            var result = await _usersManager.GetUsersByNicknameAsync(nickname, offset, limit);
+            return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
+        }
+        else
+        {
+            return BadRequest("Specify either 'uid' OR 'nickname' parameter");
+        }
     }
     
     [HttpPost("{userId}/friends/{friendId}")]
