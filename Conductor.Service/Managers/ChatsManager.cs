@@ -21,9 +21,9 @@ public class ChatsManager : IChatsManager
         _logger = logger;
     }
 
-    public async Task<Result<ChatData>> GetChatDataAsync(Guid chatId, int pageNumber, int pageSize)
+    public async Task<Result<ChatData>> GetChatDataAsync(Guid chatId, Guid userId, int pageNumber, int pageSize)
     {
-        var chatInfoTask = _routeService.GetAsync<ChatInfoDto>(Constants.ChatServiceName, $"/api/chats/{chatId}");
+        var chatInfoTask = _routeService.GetAsync<ChatInfoDto>(Constants.ChatServiceName, $"/api/chats/{chatId}/{userId}");
         var chatHistoryTask = _routeService.GetAsync<ChatHistoryDto>(
             Constants.ChatServiceName, 
             $"/api/chats/{chatId}/messages?pageNumber={pageNumber}&pageSize={pageSize}");
@@ -54,7 +54,7 @@ public class ChatsManager : IChatsManager
 
         var chatInfo = await _routeService.GetAsync<ChatInfoDto>(
             Constants.ChatServiceName, 
-            $"/api/chats/{chatId}");
+            $"/api/chats/{chatId}/{request.UserId}");
 
         if (!chatInfo.IsSuccess)
             return Result.Failure(chatInfo.Error, chatInfo.StatusCode);
@@ -76,9 +76,9 @@ public class ChatsManager : IChatsManager
             : Result.Success();
     }
 
-    public async Task<Result> EditMessageAsync(Guid chatId, Guid messageId, SendMessageRequest request)
+    public async Task<Result> EditMessageAsync(Guid chatId, Guid messageId, EditMessageRequest request)
     {
-        return await _routeService.PutAsync<SendMessageRequest>(
+        return await _routeService.PutAsync<EditMessageRequest>(
             request, 
             Constants.ChatServiceName,
             $"/api/chats/{chatId}/messages/{messageId}");
@@ -96,6 +96,21 @@ public class ChatsManager : IChatsManager
         return await _routeService.GetAsync<ChatListDto>(
             Constants.ChatServiceName,
             $"/api/chats/users/{userId}");
+    }
+
+    public async Task<Result> CreatePrivateChatAsync(CreatePrivateChatDto request)
+    {
+        if (request is null)
+            return Result.Failure("Request body is required", 400);
+
+        var sendResult = await _routeService.PostAsync<CreatePrivateChatDto>(
+            request, 
+            Constants.ChatServiceName, 
+            $"/api/chats/messages");
+
+        return !sendResult.IsSuccess
+            ? Result.Failure(sendResult.Error, sendResult.StatusCode)
+            : Result.Success();
     }
 
     private static Result? GetFirstFailedResponse(params Result[] responses)
