@@ -16,13 +16,14 @@ public class ChatsController: ControllerBase
         _chatsManager = chatsManager;
     }
 
-    [HttpGet("{chatId}")]
+    [HttpGet("{chatId}/messages/{userId}")]
     public async Task<ActionResult<ChatData>> GetChatDataAsync(
         Guid chatId, 
+        Guid userId,
         [FromQuery] int pageNumber, 
         [FromQuery] int pageSize)
     {
-        var result = await _chatsManager.GetChatDataAsync(chatId, pageNumber, pageSize);
+        var result = await _chatsManager.GetChatDataAsync(chatId, userId, pageNumber, pageSize);
         return result.IsSuccess ? Ok(result.Data) : StatusCode(result.StatusCode, result.Error);
     }
 
@@ -32,9 +33,16 @@ public class ChatsController: ControllerBase
         var result = await _chatsManager.SendMessageAsync(chatId, request);
         return result.IsSuccess ? Ok() : StatusCode(result.StatusCode, result.Error);
     }
+
+    [HttpPost("messages")]
+    public async Task<IActionResult> CreatePrivateChat([FromBody] CreatePrivateChatDto request)
+    {
+        var result = await _chatsManager.CreatePrivateChatAsync(request);
+        return result.IsSuccess ? Ok() : StatusCode(result.StatusCode, result.Error);
+    }
     
     [HttpPut("{chatId}/messages/{messageId}")]
-    public async Task<IActionResult> EditMessageAsync(Guid chatId, Guid messageId, [FromBody] SendMessageRequest request)
+    public async Task<IActionResult> EditMessageAsync(Guid chatId, Guid messageId, [FromBody] EditMessageRequest request)
     {
         var result = await _chatsManager.EditMessageAsync(chatId, messageId, request);
         return result.IsSuccess ? Ok() : StatusCode(result.StatusCode, result.Error);
