@@ -1,4 +1,5 @@
-﻿using Conductor.Dto.Chat;
+﻿using System.Text.Json;
+using Conductor.Dto.Chat;
 using Conductor.Dto.Settings;
 using Conductor.Dto.Users;
 using Conductor.Model.Constants;
@@ -58,7 +59,7 @@ public class ChatsManager : IChatsManager
 
         if (!chatInfo.IsSuccess)
             return Result.Failure(chatInfo.Error, chatInfo.StatusCode);
-
+        _logger.LogInformation($"JSON SERIALIZE: {JsonSerializer.Serialize(chatInfo.Data)}");
         if (chatInfo.Data?.Type == ChatType.Private)
         {
             var validationResult = await ValidatePrivateChatMessageAsync(chatId, request);
