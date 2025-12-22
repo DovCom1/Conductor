@@ -29,42 +29,42 @@ namespace ConductorApi.Controllers
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok();
         }
 
-        [HttpPost("{userId}/set-microphone-volume")]
+        [HttpPost("{userId}/setMicrophoneVolume")]
         public async Task<IActionResult> SetMicrophoneVolume(Guid userId, [FromBody] MicrophoneVolumeRequest request)
         {
             var result = await _settingsManager.SetMicrophoneVolume(userId, request);
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
         }
 
-        [HttpGet("{userId}/microphone-volume/{interlocutorId}")]
+        [HttpGet("{userId}/microphoneVolume/{interlocutorId}")]
         public async Task<IActionResult> GetMicrophoneVolume(Guid userId, Guid interlocutorId)
         {
             var result = await _settingsManager.GetMicrophoneVolume(userId, interlocutorId);
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
         }
 
-        [HttpPost("{userId}/turn-microphone/{interlocutorId}")]
+        [HttpPost("{userId}/turnMicrophone/{interlocutorId}")]
         public async Task<IActionResult> SetMicrophoneWorkSettings(Guid userId, Guid interlocutorId, [FromBody] WorkSettings request)
         {
             var result = await _settingsManager.SetMicrophoneWorkSettings(userId, interlocutorId, request);
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
         }
 
-        [HttpGet("{userId}/microphone-status/{interlocutorId}")]
+        [HttpGet("{userId}/microphoneStatus/{interlocutorId}")]
         public async Task<IActionResult> GetMicrophoneWorkSettings(Guid userId, Guid interlocutorId)
         {
             var result = await _settingsManager.GetMicrophoneWorkSettings(userId, interlocutorId);
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
         }
 
-        [HttpPost("{userId}/turn-video/{interlocutorId}")]
+        [HttpPost("{userId}/turnVideo/{interlocutorId}")]
         public async Task<IActionResult> SetCameraWorkSettings(Guid userId, Guid interlocutorId, [FromBody] WorkSettings request)
         {
             var result = await _settingsManager.SetCameraWorkSettings(userId, interlocutorId, request);
             return !result.IsSuccess ? StatusCode(result.StatusCode, $"An error occurred: {result.Error}") : Ok(result.Data);
         }
 
-        [HttpGet("{userId}/video-status/{interlocutorId}")]
+        [HttpGet("{userId}/videoStatus/{interlocutorId}")]
         public async Task<IActionResult> GetCameraWorkSettings(Guid userId, Guid interlocutorId)
         {
             var result = await _settingsManager.GetCameraWorkSettings(userId, interlocutorId);
