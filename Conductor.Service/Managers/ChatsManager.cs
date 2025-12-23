@@ -135,7 +135,8 @@ public class ChatsManager : IChatsManager
 
             var isEnemy = await _routeService.GetAsync<IsEnemyDto>(
                 Constants.UserServiceName, 
-                $"/api/users/{request.UserId}/enemies/{participant.UserId}/exists");
+                $"/api/users/{participant.UserId}/enemies/{request.UserId}/exists");
+            _logger.LogInformation($"{participant.UserId} is enemy for {request.UserId}: {isEnemy.Data?.Exists}");
 
             if (!isEnemy.IsSuccess)
                 return Result.Failure(isEnemy.Error, isEnemy.StatusCode);
@@ -144,7 +145,7 @@ public class ChatsManager : IChatsManager
             {
                 var enemySettings = await _routeService.GetAsync<EnemySettingsDto>(
                     Constants.SettingsServiceName, 
-                    $"/api/settings/{request.UserId}/enemies/{participant.UserId}");
+                    $"/api/settings/{participant.UserId}/enemies/{request.UserId}");
 
                 if (!enemySettings.IsSuccess)
                     return Result.Failure(enemySettings.Error, enemySettings.StatusCode);
