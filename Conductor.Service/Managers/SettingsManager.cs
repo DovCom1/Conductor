@@ -18,10 +18,8 @@ namespace Conductor.Managers
 
         public async Task<Result<EnemySettingsDto>> GetEnemySettings(Guid userId, Guid enemyId)
         {
-            var not = new EnemySettingsDto(NotificationSettings.AllNotifications);
-            return Result<EnemySettingsDto>.Success(not);
-            /*return await routeService.GetAsync<EnemySettingsDto>(Constants.SettingsServiceName, 
-                $"/api/settings/{userId}/enemies/{enemyId}");*/
+            return await routeService.GetAsync<EnemySettingsDto>(Constants.SettingsServiceName, 
+                $"/api/settings/{userId}/enemies/{enemyId}");
         }
 
         public async Task<Result> SetEnemySettings(EnemySettingsRequest request)
@@ -33,37 +31,37 @@ namespace Conductor.Managers
         public async Task<Result<MicrophoneVolumeDto>> SetMicrophoneVolume(Guid userId, MicrophoneVolumeRequest request)
         {
             return await routeService.PostAsync<MicrophoneVolumeRequest, MicrophoneVolumeDto>(request, Constants.SettingsServiceName,
-                $"/api/settings/{userId}/set-microphone-volume");
+                $"/api/settings/{userId}/setMicrophoneVolume");
         }
 
         public async Task<Result<MicrophoneVolumeDto>> GetMicrophoneVolume(Guid userId, Guid interlocutorId)
         {
             return await routeService.GetAsync<MicrophoneVolumeDto>(Constants.SettingsServiceName,
-                $"/api/settings/{userId}/microphone-volume/{interlocutorId}");
+                $"/api/settings/{userId}/microphoneVolume/{interlocutorId}");
         }
 
         public async Task<Result<WorkSettings>> SetMicrophoneWorkSettings(Guid userId, Guid interlocutorId, WorkSettings request)
         {
             return await routeService.PostAsync<WorkSettings, WorkSettings>(request, Constants.SettingsServiceName,
-                $"/api/settings/{userId}/turn-microphone/{interlocutorId}");
+                $"/api/settings/{userId}/turnMicrophone/{interlocutorId}");
         }
 
         public async Task<Result<WorkSettings>> GetMicrophoneWorkSettings(Guid userId, Guid interlocutorId)
         {
             return await routeService.GetAsync<WorkSettings>(Constants.SettingsServiceName,
-                $"/api/settings/{userId}/microphone-status/{interlocutorId}");
+                $"/api/settings/{userId}/microphoneStatus/{interlocutorId}");
         }
 
         public async Task<Result<WorkSettings>> SetCameraWorkSettings(Guid userId, Guid interlocutorId, WorkSettings request)
         {
             return await routeService.PostAsync<WorkSettings, WorkSettings>(request, Constants.SettingsServiceName,
-                $"/api/settings/{userId}/turn-video/{interlocutorId}");
+                $"/api/settings/{userId}/turnVideo/{interlocutorId}");
         }
 
         public async Task<Result<WorkSettings>> GetCameraWorkSettings(Guid userId, Guid interlocutorId)
         {
             return await routeService.GetAsync<WorkSettings>(Constants.SettingsServiceName,
-                $"/api/settings/{userId}/video-status/{interlocutorId}");
+                $"/api/settings/{userId}/videoStatus/{interlocutorId}");
         }
     }
 }

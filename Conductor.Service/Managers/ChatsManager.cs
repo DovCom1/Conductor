@@ -1,4 +1,5 @@
-﻿using Conductor.Dto.Chat;
+﻿using System.Text.Json;
+using Conductor.Dto.Chat;
 using Conductor.Dto.Settings;
 using Conductor.Dto.Users;
 using Conductor.Model.Constants;
@@ -58,7 +59,7 @@ public class ChatsManager : IChatsManager
 
         if (!chatInfo.IsSuccess)
             return Result.Failure(chatInfo.Error, chatInfo.StatusCode);
-
+        _logger.LogInformation($"JSON SERIALIZE: {JsonSerializer.Serialize(chatInfo.Data)}");
         if (chatInfo.Data?.Type == ChatType.Private)
         {
             var validationResult = await ValidatePrivateChatMessageAsync(chatId, request);
@@ -134,7 +135,8 @@ public class ChatsManager : IChatsManager
 
             var isEnemy = await _routeService.GetAsync<IsEnemyDto>(
                 Constants.UserServiceName, 
-                $"/api/users/{request.UserId}/enemies/{participant.UserId}/exists");
+                $"/api/users/{participant.UserId}/enemies/{request.UserId}/exists");
+            _logger.LogInformation($"{participant.UserId} is enemy for {request.UserId}: {isEnemy.Data?.Exists}");
 
             if (!isEnemy.IsSuccess)
                 return Result.Failure(isEnemy.Error, isEnemy.StatusCode);
@@ -143,7 +145,7 @@ public class ChatsManager : IChatsManager
             {
                 var enemySettings = await _routeService.GetAsync<EnemySettingsDto>(
                     Constants.SettingsServiceName, 
-                    $"/api/settings/{request.UserId}/enemies/{participant.UserId}");
+                    $"/api/settings/{participant.UserId}/enemies/{request.UserId}");
 
                 if (!enemySettings.IsSuccess)
                     return Result.Failure(enemySettings.Error, enemySettings.StatusCode);

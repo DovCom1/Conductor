@@ -9,6 +9,6 @@ public record ChatInfoDto(
 
 public enum ChatType
 {
+    Group,
     Private,
-    Group
 }
